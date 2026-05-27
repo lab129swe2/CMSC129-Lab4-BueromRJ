@@ -16,16 +16,22 @@ const createTask = asyncHandler(async (req, res) => {
   const uid = requireUid(req, res);
   if (!uid) return;
 
-  const normalized = normalizeCreateTask(req.body);
+  let normalized;
+  try {
+    normalized = normalizeCreateTask(req.body);
+  } catch (error) {
+    return jsonError(res, 400, error.message);
+  }
+
   const created = await taskRepository.createTask(uid, normalized);
-  res.status(201).json(created);
+  return res.status(201).json(created);
 });
 
 const listTasks = asyncHandler(async (req, res) => {
   const uid = requireUid(req, res);
   if (!uid) return;
 
-  const tasks = await taskRepository.listTasks(uid);
+  const tasks = await taskRepository.listTasks(uid, { archived: req.query.archived === "true" });
   res.status(200).json(tasks);
 });
 
@@ -48,21 +54,47 @@ const updateTask = asyncHandler(async (req, res) => {
   return res.status(200).json(updated);
 });
 
-const deleteTask = asyncHandler(async (req, res) => {
+const archiveTask = asyncHandler(async (req, res) => {
   const uid = requireUid(req, res);
   if (!uid) return;
 
-  const deleted = await taskRepository.deleteTask(uid, req.params.id);
-  if (!deleted) {
+  const archived = await taskRepository.archiveTask(uid, req.params.id);
+  if (!archived) {
     return jsonError(res, 404, "Task not found");
   }
 
   return res.status(204).send();
 });
 
+const restoreTask = asyncHandler(async (req, res) => {
+  const uid = requireUid(req, res);
+  if (!uid) return;
+
+  const restored = await taskRepository.restoreTask(uid, req.params.id);
+  if (!restored) {
+    return jsonError(res, 404, "Task not found");
+  }
+
+  return res.status(200).json(restored);
+});
+
+const purgeTask = asyncHandler(async (req, res) => {
+  const uid = requireUid(req, res);
+  if (!uid) return;
+
+  const purged = await taskRepository.purgeTask(uid, req.params.id);
+  if (!purged) {
+    return jsonError(res, 404, "Archived task not found");
+  }
+
+  return res.status(204).send();
+});
+
 module.exports = {
+  archiveTask,
   createTask,
-  deleteTask,
   listTasks,
+  purgeTask,
+  restoreTask,
   updateTask,
 };

@@ -9,6 +9,7 @@ async function createTask(uid, task) {
   const now = Date.now();
   const data = {
     ...task,
+    archivedAt: null,
     createdAt: now,
     updatedAt: now,
   };
@@ -17,9 +18,11 @@ async function createTask(uid, task) {
   return { id: docRef.id, ...data };
 }
 
-async function listTasks(uid) {
+async function listTasks(uid, { archived = false } = {}) {
   const snapshot = await tasksCollection(uid).orderBy("createdAt", "desc").get();
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  return snapshot.docs
+    .map((doc) => ({ id: doc.id, ...doc.data() }))
+    .filter((task) => Boolean(task.archivedAt) === archived);
 }
 
 async function updateTask(uid, taskId, patch) {
@@ -42,10 +45,34 @@ async function updateTask(uid, taskId, patch) {
   };
 }
 
-async function deleteTask(uid, taskId) {
+async function archiveTask(uid, taskId) {
   const docRef = tasksCollection(uid).doc(taskId);
   const snapshot = await docRef.get();
   if (!snapshot.exists) {
+    return false;
+  }
+
+  const now = Date.now();
+  await docRef.update({ archivedAt: now, updatedAt: now });
+  return true;
+}
+
+async function restoreTask(uid, taskId) {
+  const docRef = tasksCollection(uid).doc(taskId);
+  const snapshot = await docRef.get();
+  if (!snapshot.exists) {
+    return null;
+  }
+
+  const updates = { archivedAt: null, updatedAt: Date.now() };
+  await docRef.update(updates);
+  return { id: taskId, ...snapshot.data(), ...updates };
+}
+
+async function purgeTask(uid, taskId) {
+  const docRef = tasksCollection(uid).doc(taskId);
+  const snapshot = await docRef.get();
+  if (!snapshot.exists || !snapshot.data().archivedAt) {
     return false;
   }
 
@@ -54,8 +81,10 @@ async function deleteTask(uid, taskId) {
 }
 
 module.exports = {
+  archiveTask,
   createTask,
-  deleteTask,
   listTasks,
+  purgeTask,
+  restoreTask,
   updateTask,
 };

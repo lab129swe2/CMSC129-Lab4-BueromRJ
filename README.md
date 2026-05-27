@@ -2,15 +2,15 @@
 
 Author: **Rei Jansen Buerom**
 
-Live URL: **https://cmsc-129-lab4-buerom-rj.vercel.app/**
+Live URL: **https://taski-tdd.vercel.app/**
 
 ## App Description
-This project is a single-resource CRUD **Task Manager** built using **Test-Driven Development (TDD)**. Users can **sign up and log in using email/password** to access their task list. Task creation and listing are currently wired through an Express API to **Firestore**; update and delete behavior are planned to complete the CRUD workflow. Development follows the **Red -> Green -> Refactor** cycle with commit history as evidence.
+This project is a single-resource CRUD **Task Manager** built using **Test-Driven Development (TDD)**. Users can **sign up and log in using email/password** to create categorized tasks with priorities and due dates, track progress, archive tasks for later recovery, and permanently delete archived records when no longer needed. The React client communicates with an Express API backed by **Firestore**. Development follows the **Red -> Green -> Refactor** cycle with commit history as evidence.
 
 ## User Stories
 1. As a user, I want to sign up and log in with my email and password, so that I can securely access my own tasks.
-2. As a user, I want to create new tasks (with an optional description), so that I can keep track of what I need to do in order of most recently added.
-3. As a user, I want to update or delete an existing task, so that I can keep my task list accurate as priorities change or tasks are completed.
+2. As a user, I want to create categorized tasks with priorities and due dates, so that I can organize what I need to do in order of most recently added.
+3. As a user, I want to update, archive, restore, or permanently delete a task, so that I can keep my task list accurate while avoiding accidental data loss.
 
 ## Tech Stack
 - **Frontend:** React, TailwindCSS, daisyUI
@@ -159,7 +159,7 @@ Passing run (Green phase):
 
 ## Deployment
 - Platform(s): **Frontend on Vercel, Backend API on Render**
-- Live URL: **https://cmsc-129-lab4-buerom-rj.vercel.app/**
+- Live URL: **https://taski-tdd.vercel.app/**
 
 ### Render (Backend API)
 1. Create a new **Web Service** (or Blueprint) on Render connected to this repo.

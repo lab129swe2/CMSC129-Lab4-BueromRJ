@@ -9,7 +9,8 @@ router.use(requireAuth);
 router.get("/", taskController.listTasks);
 router.post("/", taskController.createTask);
 router.put("/:id", taskController.updateTask);
-router.delete("/:id", taskController.deleteTask);
+router.post("/:id/restore", taskController.restoreTask);
+router.delete("/:id/permanent", taskController.purgeTask);
+router.delete("/:id", taskController.archiveTask);
 
 module.exports = { taskRoutes: router };
-

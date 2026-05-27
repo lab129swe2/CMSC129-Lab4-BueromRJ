@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
+import { DonutChart } from "../components/DonutChart";
 import { EmptyState } from "../components/EmptyState";
 import { LoadErrorState } from "../components/LoadErrorState";
 import { PageHeader } from "../components/PageHeader";
-import { SectionCard } from "../components/SectionCard";
 import { StatCard } from "../components/StatCard";
 import { useTasks } from "../hooks/useTasks";
 
@@ -13,10 +13,18 @@ export function AnalyticsPage() {
   const inProgress = tasks.filter((task) => task.status === "doing").length;
   const completed = tasks.filter((task) => task.status === "done").length;
   const completionRate = total ? Math.round((completed / total) * 100) : 0;
-  const breakdown = [
-    { label: "To Do", count: toDo, color: "progress-neutral" },
-    { label: "In Progress", count: inProgress, color: "progress-warning" },
-    { label: "Completed", count: completed, color: "progress-success" },
+  const lowPriority = tasks.filter((task) => (task.priority || "medium") === "low").length;
+  const mediumPriority = tasks.filter((task) => (task.priority || "medium") === "medium").length;
+  const highPriority = tasks.filter((task) => task.priority === "high").length;
+  const statusSegments = [
+    { label: "To Do", count: toDo, color: "var(--color-neutral)", dotClassName: "bg-neutral" },
+    { label: "In Progress", count: inProgress, color: "var(--color-warning)", dotClassName: "bg-warning" },
+    { label: "Completed", count: completed, color: "var(--color-success)", dotClassName: "bg-success" },
+  ];
+  const prioritySegments = [
+    { label: "High", count: highPriority, color: "var(--color-error)", dotClassName: "bg-error" },
+    { label: "Medium", count: mediumPriority, color: "var(--color-info)", dotClassName: "bg-info" },
+    { label: "Low", count: lowPriority, color: "var(--color-base-300)", dotClassName: "bg-base-300" },
   ];
 
   return (
@@ -62,33 +70,20 @@ export function AnalyticsPage() {
               <StatCard label="Completion Rate" value={`${completionRate}%`} accent="success" />
             </section>
 
-            <SectionCard className="mt-6">
-              <div className="card-body gap-6 p-5 sm:p-6">
-                <div>
-                  <h2 className="text-xl font-semibold">Status Breakdown</h2>
-                  <p className="mt-1 text-sm text-base-content/70">Distribution of your current tasks by progress state.</p>
-                </div>
-                <div className="space-y-5">
-                  {breakdown.map(({ label, count, color }) => {
-                    const percentage = Math.round((count / total) * 100);
-                    return (
-                      <div key={label}>
-                        <div className="mb-2 flex justify-between text-sm">
-                          <span className="font-medium">{label}</span>
-                          <span className="text-base-content/70">{count} tasks ({percentage}%)</span>
-                        </div>
-                        <progress
-                          className={`progress w-full ${color}`}
-                          value={percentage}
-                          max={100}
-                          aria-label={`${label}: ${percentage}%`}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </SectionCard>
+            <section className="mt-6 grid gap-5 lg:grid-cols-2" aria-label="Task charts">
+              <DonutChart
+                title="Status Breakdown"
+                description="Distribution of your active tasks by progress state."
+                total={total}
+                segments={statusSegments}
+              />
+              <DonutChart
+                title="Priority Mix"
+                description="How your active tasks are prioritized."
+                total={total}
+                segments={prioritySegments}
+              />
+            </section>
           </>
         ) : null}
       </div>

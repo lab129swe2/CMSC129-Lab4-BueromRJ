@@ -26,8 +26,12 @@ function getInitials(user: User | null) {
 export function Avatar({ user, size = "md" }: AvatarProps) {
   return (
     <div className="avatar placeholder">
-      <div className={`${sizes[size]} rounded-full bg-primary text-primary-content`}>
-        {user?.photoURL ? <img alt="" src={user.photoURL} /> : <span className="font-semibold">{getInitials(user)}</span>}
+      <div className={`${sizes[size]} rounded-full bg-primary text-primary-content flex items-center justify-center overflow-hidden`}>
+        {user?.photoURL ? (
+          <img alt="" src={user.photoURL} className="rounded-full object-cover w-full h-full" />
+        ) : (
+          <span className="font-semibold leading-none">{getInitials(user)}</span>
+        )}
       </div>
     </div>
   );

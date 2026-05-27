@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { onAuthStateChanged, type User } from "firebase/auth";
+import { onIdTokenChanged, type User } from "firebase/auth";
 import { firebaseAuth } from "./firebase";
 
 type AuthContextValue = {
@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profileVersion, setProfileVersion] = useState(0);
 
   useEffect(() => {
-    return onAuthStateChanged(firebaseAuth, async (nextUser) => {
+    return onIdTokenChanged(firebaseAuth, async (nextUser) => {
       setUser(nextUser);
       if (!nextUser) {
         setIdToken(null);
