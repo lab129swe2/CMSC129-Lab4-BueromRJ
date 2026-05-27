@@ -117,7 +117,9 @@ cd [TBD_BACKEND_DIR]
 > Screenshot taken after running `npm run test:e2e` in `frontend/`.
 
 ### Full Suite
-![Full Test Suite](docs/screenshots/full-test-suite.png)
+![Full Suite - Unit](docs/screenshots/full-suite-unit.png)
+![Full Suite - Integration](docs/screenshots/full-suite-integration.png)
+![Full Suite - System](docs/screenshots/full-suite-system.png)
 
 > Screenshot taken after running the full test suite (unit + integration + system).
 
