@@ -104,6 +104,8 @@ cd [TBD_BACKEND_DIR]
 ### Unit
 ![Unit Tests](docs/screenshots/unit-tests.png)
 
+> Screenshot taken after running `npm run test:unit` in `backend/`.
+
 ### Integration
 ![Integration Tests](docs/screenshots/integration-tests.png)
 
