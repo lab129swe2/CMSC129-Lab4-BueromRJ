@@ -1,4 +1,4 @@
-const { normalizeCreateTask } = require("../domain/taskDomain");
+const { normalizeCreateTask, normalizeUpdateTask } = require("../domain/taskDomain");
 const taskRepository = require("../repositories/taskRepository");
 const { asyncHandler } = require("../utils/asyncHandler");
 const { jsonError } = require("../utils/httpErrors");
@@ -29,13 +29,40 @@ const listTasks = asyncHandler(async (req, res) => {
   res.status(200).json(tasks);
 });
 
-function notImplemented(_req, res) {
-  return res.status(501).json({ error: "Not implemented" });
-}
+const updateTask = asyncHandler(async (req, res) => {
+  const uid = requireUid(req, res);
+  if (!uid) return;
+
+  let normalized;
+  try {
+    normalized = normalizeUpdateTask(req.body);
+  } catch (error) {
+    return jsonError(res, 400, error.message);
+  }
+
+  const updated = await taskRepository.updateTask(uid, req.params.id, normalized);
+  if (!updated) {
+    return jsonError(res, 404, "Task not found");
+  }
+
+  return res.status(200).json(updated);
+});
+
+const deleteTask = asyncHandler(async (req, res) => {
+  const uid = requireUid(req, res);
+  if (!uid) return;
+
+  const deleted = await taskRepository.deleteTask(uid, req.params.id);
+  if (!deleted) {
+    return jsonError(res, 404, "Task not found");
+  }
+
+  return res.status(204).send();
+});
 
 module.exports = {
   createTask,
-  deleteTask: notImplemented,
+  deleteTask,
   listTasks,
-  updateTask: notImplemented,
+  updateTask,
 };

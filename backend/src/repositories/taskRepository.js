@@ -22,7 +22,40 @@ async function listTasks(uid) {
   return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 }
 
+async function updateTask(uid, taskId, patch) {
+  const docRef = tasksCollection(uid).doc(taskId);
+  const snapshot = await docRef.get();
+  if (!snapshot.exists) {
+    return null;
+  }
+
+  const updates = {
+    ...patch,
+    updatedAt: Date.now(),
+  };
+  await docRef.update(updates);
+
+  return {
+    id: taskId,
+    ...snapshot.data(),
+    ...updates,
+  };
+}
+
+async function deleteTask(uid, taskId) {
+  const docRef = tasksCollection(uid).doc(taskId);
+  const snapshot = await docRef.get();
+  if (!snapshot.exists) {
+    return false;
+  }
+
+  await docRef.delete();
+  return true;
+}
+
 module.exports = {
   createTask,
+  deleteTask,
   listTasks,
+  updateTask,
 };

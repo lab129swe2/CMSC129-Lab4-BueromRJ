@@ -29,3 +29,26 @@ export async function createTask(
   }) as Promise<Task>;
 }
 
+export async function updateTask(
+  idToken: string,
+  taskId: string,
+  patch: Partial<Pick<Task, "title" | "description" | "status">>,
+) {
+  return apiFetch(`/api/tasks/${taskId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${idToken}`,
+    },
+    body: JSON.stringify(patch),
+  }) as Promise<Task>;
+}
+
+export async function deleteTask(idToken: string, taskId: string) {
+  await apiFetch(`/api/tasks/${taskId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${idToken}`,
+    },
+  });
+}

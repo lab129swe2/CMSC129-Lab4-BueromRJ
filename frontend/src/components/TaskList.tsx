@@ -3,30 +3,37 @@ import { listTasks, type Task } from "../api/tasks";
 import { useAuth } from "../auth/AuthProvider";
 import { TaskItem } from "./TaskItem";
 
-export function TaskList() {
+type TaskListProps = {
+  refreshVersion: number;
+  onTaskChanged: () => void;
+};
+
+export function TaskList({ refreshVersion, onTaskChanged }: TaskListProps) {
   const { idToken } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function refresh() {
-    if (!idToken) return;
-    setError(null);
-    setLoading(true);
-    try {
-      const result = await listTasks(idToken);
-      setTasks(result);
-    } catch (e) {
-      setError(String((e as any)?.message || e));
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
+    if (!idToken) {
+      setTasks([]);
+      return;
+    }
+
+    async function refresh() {
+      setError(null);
+      setLoading(true);
+      try {
+        setTasks(await listTasks(idToken));
+      } catch (caught) {
+        setError(String((caught as Error).message || caught));
+      } finally {
+        setLoading(false);
+      }
+    }
+
     void refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idToken]);
+  }, [idToken, refreshVersion]);
 
   return (
     <section data-testid="task-list" className="flex flex-col gap-4">
@@ -36,17 +43,31 @@ export function TaskList() {
       </div>
 
       <div className="flex flex-col gap-3">
-        {loading ? <div className="text-sm text-base-content/70">Loading…</div> : null}
+        {loading ? <div className="text-sm text-base-content/70">Loading...</div> : null}
         {error ? <div className="alert alert-error text-sm">{error}</div> : null}
 
         {idToken ? (
           tasks.length > 0 ? (
-            tasks.map((t) => <TaskItem key={t.id} title={t.title} />)
+            tasks.map((task) => (
+              <TaskItem
+                key={task.id}
+                task={task}
+                idToken={idToken}
+                onTaskChanged={onTaskChanged}
+              />
+            ))
           ) : (
             <div className="text-sm text-base-content/70">No tasks yet.</div>
           )
         ) : (
-          <TaskItem title="Example task" />
+          <TaskItem
+            task={{
+              id: "example",
+              title: "Example task",
+              status: "todo",
+              description: "Example description",
+            }}
+          />
         )}
       </div>
     </section>
