@@ -1,4 +1,5 @@
 const express = require("express");
+const { taskRoutes } = require("./routes/taskRoutes");
 
 function createApp() {
   const app = express();
@@ -9,8 +10,9 @@ function createApp() {
     res.status(200).json({ ok: true });
   });
 
+  app.use("/api/tasks", taskRoutes);
+
   return app;
 }
 
 module.exports = { createApp };
-
