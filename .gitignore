@@ -7,5 +7,7 @@ build/
 coverage/
 playwright-report/
 test-results/
+*-debug.log
+firebase-debug.log
+firestore-debug.log
 .DS_Store
-

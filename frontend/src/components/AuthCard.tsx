@@ -1,3 +1,5 @@
+import { FormField } from "./FormField";
+
 type AuthCardProps = {
   onLogin?: () => void;
   onSignup?: () => void;
@@ -7,35 +9,33 @@ export function AuthCard({ onLogin, onSignup }: AuthCardProps) {
   return (
     <div className="card bg-base-100 shadow-sm">
       <div className="card-body gap-4">
-        <h2 className="card-title">Account</h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="card-title">Account</h2>
+          <span className="badge badge-ghost">Email/Password</span>
+        </div>
 
-        <label className="form-control w-full">
-          <div className="label">
-            <span className="label-text">Email</span>
-          </div>
+        <FormField label="Email">
           <input
             data-testid="auth-email"
             className="input input-bordered w-full"
             type="email"
             placeholder="you@example.com"
             autoComplete="email"
+            inputMode="email"
           />
-        </label>
+        </FormField>
 
-        <label className="form-control w-full">
-          <div className="label">
-            <span className="label-text">Password</span>
-          </div>
+        <FormField label="Password">
           <input
             data-testid="auth-password"
             className="input input-bordered w-full"
             type="password"
-            placeholder="••••••••"
+            placeholder="********"
             autoComplete="current-password"
           />
-        </label>
+        </FormField>
 
-        <div className="flex flex-col gap-2 sm:flex-row">
+        <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
           <button
             data-testid="auth-signup"
             type="button"
@@ -53,8 +53,11 @@ export function AuthCard({ onLogin, onSignup }: AuthCardProps) {
             Log in
           </button>
         </div>
+
+        <p className="text-sm text-base-content/70">
+          UI-only for now. Firebase auth wiring comes in later commits.
+        </p>
       </div>
     </div>
   );
 }
-

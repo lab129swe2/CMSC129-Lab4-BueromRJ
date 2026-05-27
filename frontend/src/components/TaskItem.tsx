@@ -33,12 +33,14 @@ export function TaskItem({ title }: TaskItemProps) {
             </select>
           </label>
 
-          <button data-testid="task-delete" type="button" className="btn btn-sm btn-error">
-            Delete
-          </button>
+          <div className="flex items-center justify-end gap-2">
+            <span className="badge badge-ghost">Local</span>
+            <button data-testid="task-delete" type="button" className="btn btn-sm btn-error">
+              Delete
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 }
-
