@@ -109,6 +109,8 @@ cd [TBD_BACKEND_DIR]
 ### Integration
 ![Integration Tests](docs/screenshots/integration-tests.png)
 
+> Screenshot taken after running `npm run test:integration` in `backend/` (with Firebase emulators running).
+
 ### System / E2E
 ![System Tests](docs/screenshots/system-tests.png)
 
