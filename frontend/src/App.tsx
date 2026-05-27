@@ -39,9 +39,9 @@ export function App() {
 
   return (
     <Routes>
-      <Route index element={<LandingPage />} />
-      <Route path="/signup" element={<SignUpPage />} />
-      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route index element={idToken ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
+      <Route path="/signup" element={idToken ? <Navigate to="/dashboard" replace /> : <SignUpPage />} />
+      <Route path="/forgot-password" element={idToken ? <Navigate to="/dashboard" replace /> : <ForgotPasswordPage />} />
       <Route
         path="/dashboard"
         element={

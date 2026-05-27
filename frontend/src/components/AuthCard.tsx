@@ -24,6 +24,7 @@ export function AuthCard({ onLogin }: AuthCardProps) {
       await signInWithEmailAndPassword(firebaseAuth, email, password);
       onLogin?.();
     } catch (caught) {
+      console.error("Firebase sign-in failed", caught);
       setError(getFriendlyErrorMessage(caught, "Unable to sign in. Please try again."));
     } finally {
       setSubmitting(false);

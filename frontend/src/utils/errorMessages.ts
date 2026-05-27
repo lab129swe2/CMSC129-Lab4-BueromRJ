@@ -13,6 +13,12 @@ export function getFriendlyErrorMessage(error: unknown, fallback: string) {
   if (message.includes("auth/invalid-email")) {
     return "Enter a valid email address.";
   }
+  if (message.includes("auth/unauthorized-domain")) {
+    return "This domain is not authorized in Firebase Auth. Add the deployed domain to Authorized domains.";
+  }
+  if (message.includes("auth/operation-not-allowed")) {
+    return "This sign-in method is not enabled in Firebase Authentication.";
+  }
   if (message.includes("API 401")) {
     return "Your session has expired. Please log in again.";
   }
