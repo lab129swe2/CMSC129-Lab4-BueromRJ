@@ -148,5 +148,23 @@ Passing run (Green phase):
 > Screenshots taken from GitHub Actions workflow runs for the corresponding `[RED]` and `[GREEN]` commits.
 
 ## Deployment
-- Platform(s): **[TBD]**
+- Platform(s): **Frontend on Vercel, Backend API on Render**
 - Live URL: **[TBD]**
+
+### Render (Backend API)
+1. Create a new **Web Service** (or Blueprint) on Render connected to this repo.
+2. Use `backend/` as the root directory.
+3. Set:
+   - Build command: `npm ci`
+   - Start command: `npm start`
+4. Add Render environment variables:
+   - `FIREBASE_PROJECT_ID` (production Firebase project id)
+   - `FIREBASE_SERVICE_ACCOUNT_JSON` (service account JSON as a single-line string) **or** `FIREBASE_SERVICE_ACCOUNT_BASE64`
+   - `CORS_ORIGIN` (your Vercel frontend URL)
+
+### Vercel (Frontend)
+Set Vercel environment variables:
+- `VITE_API_BASE_URL` (your Render backend URL)
+- `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_APP_ID`
+
+Do **not** set emulator variables in production.

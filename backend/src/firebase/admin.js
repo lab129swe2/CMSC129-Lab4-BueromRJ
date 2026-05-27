@@ -8,14 +8,33 @@ function getProjectId() {
   return projectId;
 }
 
+function getCredential() {
+  const json = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+  if (json) {
+    const serviceAccount = JSON.parse(json);
+    return admin.credential.cert(serviceAccount);
+  }
+
+  const b64 = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+  if (b64) {
+    const serviceAccount = JSON.parse(Buffer.from(b64, "base64").toString("utf8"));
+    return admin.credential.cert(serviceAccount);
+  }
+
+  return undefined;
+}
+
 function initAdmin() {
   if (admin.apps.length > 0) {
     return;
   }
 
-  admin.initializeApp({
-    projectId: getProjectId(),
-  });
+  const credential = getCredential();
+  admin.initializeApp(
+    credential
+      ? { credential, projectId: getProjectId() }
+      : { projectId: getProjectId() },
+  );
 }
 
 let cachedDb;

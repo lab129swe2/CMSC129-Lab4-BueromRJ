@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: cmsc129-lab4-task-manager-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Render injects PORT automatically; app must listen on process.env.PORT.
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      # Recommended: set ONE of these in the Render dashboard (do not commit secrets).
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT_BASE64
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+
