@@ -114,8 +114,17 @@ cd [TBD_BACKEND_DIR]
 ### System / E2E
 ![System Tests](docs/screenshots/system-tests.png)
 
+> Screenshot taken after running `npm run test:e2e` in `frontend/`.
+
 ### Full Suite
 ![Full Test Suite](docs/screenshots/full-test-suite.png)
+
+> Screenshot taken after running the full test suite (unit + integration + system).
+
+## Reflection
+Writing tests before code was most difficult when the implementation details were still unclear. In the Red phase, I had to commit to a concrete behavior (inputs, outputs, status codes, and UI selectors) without relying on “I’ll figure it out later.” That forced me to think carefully about what the user story actually required and what should be tested at each level. I also found it challenging to keep Red commits failing for the correct reason: a misconfigured test runner or missing emulator is very different from a meaningful failing assertion, so I had to pay attention to setup and isolation early.
+
+Writing tests first changed how I designed the code by pushing me toward clean boundaries. The unit tests encouraged small, pure functions for validation and normalization. Integration tests pushed me to export the Express app separately from the server so Supertest could run request/response cycles without starting a real listener. System tests made me define stable `data-testid` hooks, which shaped the component structure and kept UI changes from breaking tests accidentally. Overall, the tests acted like a specification: I implemented only what was needed to satisfy the next failing test, then refactored with confidence because the test suite guarded behavior.
 
 ## CI/CD Setup
 This repository uses **GitHub Actions** to run tests automatically on every push to `main`.
