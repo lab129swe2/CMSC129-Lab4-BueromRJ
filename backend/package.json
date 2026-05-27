@@ -5,6 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
     "test": "jest",
     "test:integration": "jest --config jest.integration.config.cjs",
     "test:unit": "jest --config jest.unit.config.cjs"
