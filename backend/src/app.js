@@ -1,8 +1,17 @@
 const express = require("express");
+const cors = require("cors");
 const { taskRoutes } = require("./routes/taskRoutes");
 
 function createApp() {
   const app = express();
+
+  const corsOrigin = process.env.CORS_ORIGIN || "http://127.0.0.1:5173";
+  app.use(
+    cors({
+      origin: corsOrigin,
+      credentials: false,
+    }),
+  );
 
   app.use(express.json());
 

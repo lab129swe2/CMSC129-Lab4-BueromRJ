@@ -51,6 +51,10 @@ function normalizeUpdateTask(patch) {
     normalized.description = patch.description;
   }
 
+  if (Object.keys(normalized).length === 0) {
+    throw new Error("Patch has no supported fields");
+  }
+
   return normalized;
 }
 
