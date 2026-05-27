@@ -117,7 +117,7 @@ cd [TBD_BACKEND_DIR]
 This repository uses **GitHub Actions** to run tests automatically on every push to `main`.
 
 ### Workflow Behavior
-- Trigger: **push** to `main` **[TBD_WORKFLOW_DETAILS]**
+- Trigger: **push** to `main` and **pull_request** targeting `main`
 - Unit, integration, and system tests run in CI
 - `[RED]` commits must show a **failing** CI run (tests fail for the correct reason)
 - `[GREEN]` commits must show a **passing** CI run (minimal implementation confirmed)

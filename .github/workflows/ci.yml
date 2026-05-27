@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: CI Placeholder (initialize projects first)
+        shell: bash
+        run: |
+          if [[ ! -f "backend/package.json" ]]; then
+            echo "Missing backend/package.json."
+            echo "Initialize the backend (Node + Jest), then replace this placeholder with real test commands."
+            exit 1
+          fi
+
+          echo "TODO: Replace this placeholder with real commands once ready:"
+          echo "- npm ci (backend)"
+          echo "- npm test (backend unit/integration)"
+          echo "- start Firebase emulators (Auth + Firestore) for integration/system tests"
+          echo "- run Playwright system tests"
+          exit 1
+

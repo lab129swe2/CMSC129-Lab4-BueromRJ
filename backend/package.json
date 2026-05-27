@@ -1,0 +1,14 @@
+{
+  "name": "task-manager-backend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "test": "jest",
+    "test:unit": "jest --config jest.unit.config.cjs"
+  },
+  "devDependencies": {
+    "jest": "^30.0.0"
+  }
+}
+
