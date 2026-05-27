@@ -28,5 +28,6 @@ jobs:
         working-directory: backend
         run: npm run test:unit
 
-  # TODO(integration): Add Firebase emulators (Auth + Firestore) + Supertest runs (Commits 5–8).
-  # TODO(system): Add Playwright E2E runs (Commits 9–12).
+  # TODO(integration): Add Firebase emulators (Auth + Firestore) + Supertest runs (Commits 5-8).
+  # TODO(system): Add Playwright E2E runs (Commits 9-12).
+
