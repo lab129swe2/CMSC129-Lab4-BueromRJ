@@ -1,12 +1,17 @@
 const { admin, initAdmin } = require("../firebase/admin");
+const { jsonError } = require("../utils/httpErrors");
 
-async function requireAuth(req, res, next) {
+function getBearerToken(req) {
   const header = req.headers.authorization || "";
   const match = header.match(/^Bearer\s+(.+)$/i);
-  const token = match?.[1];
+  return match?.[1] || null;
+}
+
+async function requireAuth(req, res, next) {
+  const token = getBearerToken(req);
 
   if (!token) {
-    return res.status(401).json({ error: "Unauthorized" });
+    return jsonError(res, 401, "Unauthorized");
   }
 
   try {
@@ -15,7 +20,7 @@ async function requireAuth(req, res, next) {
     req.user = { uid: decoded.uid };
     return next();
   } catch (_err) {
-    return res.status(401).json({ error: "Unauthorized" });
+    return jsonError(res, 401, "Unauthorized");
   }
 }
 

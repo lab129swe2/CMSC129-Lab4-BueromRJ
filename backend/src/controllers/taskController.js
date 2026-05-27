@@ -1,26 +1,33 @@
 const { normalizeCreateTask } = require("../domain/taskDomain");
 const taskRepository = require("../repositories/taskRepository");
+const { asyncHandler } = require("../utils/asyncHandler");
+const { jsonError } = require("../utils/httpErrors");
 
-async function createTask(req, res) {
+function requireUid(req, res) {
   const uid = req.user?.uid;
   if (!uid) {
-    return res.status(401).json({ error: "Unauthorized" });
+    jsonError(res, 401, "Unauthorized");
+    return null;
   }
+  return uid;
+}
+
+const createTask = asyncHandler(async (req, res) => {
+  const uid = requireUid(req, res);
+  if (!uid) return;
 
   const normalized = normalizeCreateTask(req.body);
   const created = await taskRepository.createTask(uid, normalized);
-  return res.status(201).json(created);
-}
+  res.status(201).json(created);
+});
 
-async function listTasks(req, res) {
-  const uid = req.user?.uid;
-  if (!uid) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+const listTasks = asyncHandler(async (req, res) => {
+  const uid = requireUid(req, res);
+  if (!uid) return;
 
   const tasks = await taskRepository.listTasks(uid);
-  return res.status(200).json(tasks);
-}
+  res.status(200).json(tasks);
+});
 
 function notImplemented(_req, res) {
   return res.status(501).json({ error: "Not implemented" });
