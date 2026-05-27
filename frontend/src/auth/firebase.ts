@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 
 const env = import.meta.env;
+const requiredKeys = ["VITE_FIREBASE_API_KEY", "VITE_FIREBASE_AUTH_DOMAIN", "VITE_FIREBASE_PROJECT_ID", "VITE_FIREBASE_APP_ID"] as const;
 const localDefaults = env.DEV
   ? {
       apiKey: "fake-api-key",
@@ -10,6 +11,13 @@ const localDefaults = env.DEV
       appId: "fake-app-id",
     }
   : {};
+
+if (env.PROD) {
+  const missingKeys = requiredKeys.filter((key) => !env[key]);
+  if (missingKeys.length > 0) {
+    throw new Error(`Missing Firebase env vars: ${missingKeys.join(", ")}`);
+  }
+}
 
 const firebaseConfig = {
   apiKey: env.VITE_FIREBASE_API_KEY || localDefaults.apiKey,
