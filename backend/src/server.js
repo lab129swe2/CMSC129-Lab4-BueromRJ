@@ -1,6 +1,9 @@
 const { createApp } = require("./app");
+const path = require("path");
 
-const port = process.env.PORT ? Number(process.env.PORT) : 3001;
+require("dotenv").config({ path: path.resolve(__dirname, "..", "..", ".env") });
+
+const port = process.env.BACKEND_PORT ? Number(process.env.BACKEND_PORT) : 3001;
 
 const app = createApp();
 app.listen(port, () => {

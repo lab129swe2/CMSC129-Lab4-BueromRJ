@@ -1,0 +1,12 @@
+{
+  "name": "cmsc129-lab4-task-manager",
+  "private": true,
+  "scripts": {
+    "emulators:start": "firebase emulators:start --only auth,firestore,ui",
+    "emulators:exec:integration": "firebase emulators:exec --only auth,firestore \"echo 'TODO: add integration tests (Commit 5 [RED])' && exit 1\""
+  },
+  "devDependencies": {
+    "firebase-tools": "^14.11.0"
+  }
+}
+
