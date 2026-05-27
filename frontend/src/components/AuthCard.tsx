@@ -1,4 +1,7 @@
 import { FormField } from "./FormField";
+import { useState } from "react";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { firebaseAuth } from "../auth/firebase";
 
 type AuthCardProps = {
   onLogin?: () => void;
@@ -6,6 +9,37 @@ type AuthCardProps = {
 };
 
 export function AuthCard({ onLogin, onSignup }: AuthCardProps) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSignup() {
+    setError(null);
+    setLoading(true);
+    try {
+      await createUserWithEmailAndPassword(firebaseAuth, email, password);
+      onSignup?.();
+    } catch (e) {
+      setError(String((e as any)?.message || e));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleLogin() {
+    setError(null);
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(firebaseAuth, email, password);
+      onLogin?.();
+    } catch (e) {
+      setError(String((e as any)?.message || e));
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="card bg-base-100 shadow-sm">
       <div className="card-body gap-4">
@@ -22,6 +56,8 @@ export function AuthCard({ onLogin, onSignup }: AuthCardProps) {
             placeholder="you@example.com"
             autoComplete="email"
             inputMode="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </FormField>
 
@@ -32,6 +68,8 @@ export function AuthCard({ onLogin, onSignup }: AuthCardProps) {
             type="password"
             placeholder="********"
             autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </FormField>
 
@@ -40,7 +78,8 @@ export function AuthCard({ onLogin, onSignup }: AuthCardProps) {
             data-testid="auth-signup"
             type="button"
             className="btn btn-primary flex-1"
-            onClick={onSignup}
+            disabled={loading}
+            onClick={handleSignup}
           >
             Sign up
           </button>
@@ -48,15 +87,14 @@ export function AuthCard({ onLogin, onSignup }: AuthCardProps) {
             data-testid="auth-login"
             type="button"
             className="btn btn-outline flex-1"
-            onClick={onLogin}
+            disabled={loading}
+            onClick={handleLogin}
           >
             Log in
           </button>
         </div>
 
-        <p className="text-sm text-base-content/70">
-          UI-only for now. Firebase auth wiring comes in later commits.
-        </p>
+        {error ? <div className="alert alert-error text-sm">{error}</div> : null}
       </div>
     </div>
   );

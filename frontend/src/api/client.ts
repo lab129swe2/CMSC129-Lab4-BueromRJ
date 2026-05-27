@@ -18,4 +18,3 @@ export async function apiFetch(path: string, init: RequestInit = {}) {
   }
   return res.text();
 }
-
