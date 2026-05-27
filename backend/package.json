@@ -4,11 +4,15 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
+    "dev": "nodemon src/server.js",
     "test": "jest",
     "test:unit": "jest --config jest.unit.config.cjs"
   },
   "devDependencies": {
-    "jest": "^30.0.0"
+    "jest": "^30.0.0",
+    "nodemon": "^3.1.14"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
   }
 }
-
