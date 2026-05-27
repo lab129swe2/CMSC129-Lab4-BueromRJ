@@ -67,14 +67,12 @@ async function getIdTokenForTestUser() {
     email,
     password,
     returnSecureToken: true,
-    tenantId: projectId,
   });
 
   const signedIn = await post("/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword", {
     email,
     password,
     returnSecureToken: true,
-    tenantId: projectId,
   });
 
   return signedIn.idToken;
