@@ -170,7 +170,7 @@ Passing run (Green phase):
 4. Add Render environment variables:
    - `FIREBASE_PROJECT_ID` (production Firebase project id)
    - `FIREBASE_SERVICE_ACCOUNT_JSON` (service account JSON as a single-line string) **or** `FIREBASE_SERVICE_ACCOUNT_BASE64`
-   - `CORS_ORIGIN` (your Vercel frontend URL)
+   - `CORS_ORIGIN` (your Vercel frontend URL, for example `https://taski-tdd.vercel.app`)
 
 ### Vercel (Frontend)
 Set Vercel environment variables:
