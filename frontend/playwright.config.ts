@@ -7,7 +7,7 @@ export default defineConfig({
     timeout: 10_000,
   },
   use: {
-    baseURL: "http://127.0.0.1:5173",
+    baseURL: "http://localhost:5173",
     trace: "on-first-retry",
   },
   webServer: [
@@ -18,9 +18,9 @@ export default defineConfig({
       reuseExistingServer: true,
     },
     {
-      command: "npm run dev -- --host 127.0.0.1 --port 5173",
+      command: "npm run dev -- --host localhost --port 5173",
       cwd: ".",
-      port: 5173,
+      url: "http://localhost:5173",
       reuseExistingServer: true,
     },
   ],

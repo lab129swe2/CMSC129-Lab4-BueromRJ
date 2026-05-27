@@ -4,8 +4,10 @@ import { onAuthStateChanged, type User } from "firebase/auth";
 import { firebaseAuth } from "./firebase";
 
 type AuthContextValue = {
+  ready: boolean;
   idToken: string | null;
   user: User | null;
+  refreshProfile: () => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -13,19 +15,30 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [idToken, setIdToken] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
+  const [profileVersion, setProfileVersion] = useState(0);
 
   useEffect(() => {
     return onAuthStateChanged(firebaseAuth, async (nextUser) => {
       setUser(nextUser);
       if (!nextUser) {
         setIdToken(null);
+        setReady(true);
         return;
       }
       setIdToken(await nextUser.getIdToken());
+      setReady(true);
     });
   }, []);
 
-  const value = useMemo(() => ({ idToken, user }), [idToken, user]);
+  function refreshProfile() {
+    setProfileVersion((current) => current + 1);
+  }
+
+  const value = useMemo(
+    () => ({ ready, idToken, user, refreshProfile }),
+    [idToken, profileVersion, ready, user],
+  );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
@@ -36,4 +49,3 @@ export function useAuth() {
   }
   return ctx;
 }
-

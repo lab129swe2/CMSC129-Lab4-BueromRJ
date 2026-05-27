@@ -58,8 +58,18 @@ function getDb() {
   return db;
 }
 
+async function closeAdmin() {
+  if (cachedDb) {
+    await cachedDb.terminate();
+    cachedDb = undefined;
+  }
+
+  await Promise.all(admin.apps.map((app) => app.delete()));
+}
+
 module.exports = {
   admin,
+  closeAdmin,
   getDb,
   initAdmin,
 };

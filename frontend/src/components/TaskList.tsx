@@ -1,75 +1,81 @@
-import { useEffect, useState } from "react";
-import { listTasks, type Task } from "../api/tasks";
-import { useAuth } from "../auth/AuthProvider";
+import type { Task } from "../api/tasks";
+import { EmptyState } from "./EmptyState";
+import { LoadErrorState } from "./LoadErrorState";
+import { SectionHeader } from "./SectionHeader";
 import { TaskItem } from "./TaskItem";
 
 type TaskListProps = {
-  refreshVersion: number;
+  tasks?: Task[];
+  loading?: boolean;
+  error?: string | null;
+  idToken?: string | null;
   onTaskChanged: () => void;
+  onRetry?: () => void;
+  preview?: boolean;
+  emptyActionHref?: string;
 };
 
-export function TaskList({ refreshVersion, onTaskChanged }: TaskListProps) {
-  const { idToken } = useAuth();
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+const previewTask: Task = {
+  id: "example",
+  title: "Prepare laboratory submission",
+  status: "doing",
+  description: "Verify test outputs and update documentation.",
+};
 
-  useEffect(() => {
-    if (!idToken) {
-      setTasks([]);
-      return;
-    }
-
-    async function refresh() {
-      setError(null);
-      setLoading(true);
-      try {
-        setTasks(await listTasks(idToken));
-      } catch (caught) {
-        setError(String((caught as Error).message || caught));
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    void refresh();
-  }, [idToken, refreshVersion]);
-
+export function TaskList({
+  tasks = [],
+  loading = false,
+  error = null,
+  idToken,
+  onTaskChanged,
+  onRetry,
+  preview = false,
+  emptyActionHref,
+}: TaskListProps) {
   return (
-    <section data-testid="task-list" className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Tasks</h2>
-        <div className="text-sm text-base-content/70">Newest first</div>
-      </div>
+    <section data-testid="task-list" className="flex flex-col gap-4" aria-label="Task list">
+      <SectionHeader title={preview ? "Task List" : "Your Tasks"} badge="Newest first" />
 
-      <div className="flex flex-col gap-3">
-        {loading ? <div className="text-sm text-base-content/70">Loading...</div> : null}
-        {error ? <div className="alert alert-error text-sm">{error}</div> : null}
+      {loading ? (
+        <div className="space-y-3" role="status" aria-label="Loading tasks">
+          <p className="text-sm text-base-content/70">Loading your tasks...</p>
+          {[1, 2].map((item) => (
+            <div key={item} className="skeleton h-32 w-full" />
+          ))}
+        </div>
+      ) : null}
+      {!loading && error ? (
+        <LoadErrorState
+          title="Your tasks will appear here"
+          message="We could not sync your task list right now. Try again to check for existing tasks or begin creating new ones."
+          onRetry={onRetry}
+        />
+      ) : null}
 
-        {idToken ? (
-          tasks.length > 0 ? (
-            tasks.map((task) => (
-              <TaskItem
-                key={task.id}
-                task={task}
-                idToken={idToken}
-                onTaskChanged={onTaskChanged}
-              />
-            ))
-          ) : (
-            <div className="text-sm text-base-content/70">No tasks yet.</div>
-          )
+      {!loading && preview ? <TaskItem task={previewTask} /> : null}
+
+      {!loading && !error && idToken && !preview ? (
+        tasks.length > 0 ? (
+          <div className="space-y-3">
+            {tasks.map((task) => (
+              <TaskItem key={task.id} task={task} idToken={idToken} onTaskChanged={onTaskChanged} />
+            ))}
+          </div>
         ) : (
-          <TaskItem
-            task={{
-              id: "example",
-              title: "Example task",
-              status: "todo",
-              description: "Example description",
-            }}
+          <EmptyState
+            eyebrow="Get started"
+            title="No tasks yet"
+            description="Plan your next action and watch your progress grow from here."
+            action={
+              emptyActionHref ? (
+                <a className="btn btn-primary" href={emptyActionHref}>
+                  Create your first task
+                </a>
+              ) : undefined
+            }
           />
-        )}
-      </div>
+        )
+      ) : null}
     </section>
   );
 }

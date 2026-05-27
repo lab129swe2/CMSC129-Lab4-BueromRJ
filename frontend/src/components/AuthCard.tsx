@@ -1,54 +1,44 @@
-import { FormField } from "./FormField";
 import { useState } from "react";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { Link } from "react-router-dom";
 import { firebaseAuth } from "../auth/firebase";
+import { getFriendlyErrorMessage } from "../utils/errorMessages";
+import { FormField } from "./FormField";
+import { PasswordInput } from "./PasswordInput";
+import { SectionCard } from "./SectionCard";
 
 type AuthCardProps = {
   onLogin?: () => void;
-  onSignup?: () => void;
 };
 
-export function AuthCard({ onLogin, onSignup }: AuthCardProps) {
+export function AuthCard({ onLogin }: AuthCardProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  async function handleSignup() {
-    setError(null);
-    setLoading(true);
-    try {
-      await createUserWithEmailAndPassword(firebaseAuth, email, password);
-      onSignup?.();
-    } catch (e) {
-      setError(String((e as any)?.message || e));
-    } finally {
-      setLoading(false);
-    }
-  }
+  const [submitting, setSubmitting] = useState(false);
 
   async function handleLogin() {
     setError(null);
-    setLoading(true);
+    setSubmitting(true);
     try {
       await signInWithEmailAndPassword(firebaseAuth, email, password);
       onLogin?.();
-    } catch (e) {
-      setError(String((e as any)?.message || e));
+    } catch (caught) {
+      setError(getFriendlyErrorMessage(caught, "Unable to sign in. Please try again."));
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   }
 
   return (
-    <div className="card bg-base-100 shadow-sm">
-      <div className="card-body gap-4">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="card-title">Account</h2>
-          <span className="badge badge-ghost">Email/Password</span>
+    <SectionCard className="shadow-lg">
+      <div className="card-body gap-5 p-6 sm:p-8">
+        <div className="space-y-2 text-center">
+          <h2 className="card-title justify-center text-2xl">Welcome Back</h2>
+          <p className="text-sm text-base-content/70">Enter your details to access your task list.</p>
         </div>
 
-        <FormField label="Email">
+        <FormField label="Email" required>
           <input
             data-testid="auth-email"
             className="input input-bordered w-full"
@@ -56,46 +46,53 @@ export function AuthCard({ onLogin, onSignup }: AuthCardProps) {
             placeholder="you@example.com"
             autoComplete="email"
             inputMode="email"
+            required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(event) => setEmail(event.target.value)}
           />
         </FormField>
 
-        <FormField label="Password">
-          <input
+        <FormField label="Password" required>
+          <PasswordInput
             data-testid="auth-password"
             className="input input-bordered w-full"
-            type="password"
-            placeholder="********"
+            placeholder="Enter your password"
             autoComplete="current-password"
+            required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(event) => setPassword(event.target.value)}
           />
         </FormField>
 
-        <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-          <button
-            data-testid="auth-signup"
-            type="button"
-            className="btn btn-primary flex-1"
-            disabled={loading}
-            onClick={handleSignup}
-          >
-            Sign up
-          </button>
-          <button
-            data-testid="auth-login"
-            type="button"
-            className="btn btn-outline flex-1"
-            disabled={loading}
-            onClick={handleLogin}
-          >
-            Log in
-          </button>
-        </div>
+        {error ? (
+          <div role="alert" className="alert alert-error text-sm">
+            <span>{error}</span>
+          </div>
+        ) : null}
 
-        {error ? <div className="alert alert-error text-sm">{error}</div> : null}
+        <button
+          data-testid="auth-login"
+          type="button"
+          className="btn btn-primary mt-2 w-full"
+          disabled={submitting}
+          onClick={handleLogin}
+        >
+          {submitting ? <span className="loading loading-spinner loading-sm" /> : null}
+          {submitting ? "Signing in..." : "Sign In"}
+        </button>
+
+        <div className="flex items-center justify-between gap-4 pt-2 text-sm">
+          <p className="text-base-content/70">
+            No account?{" "}
+            <Link data-testid="auth-signup" to="/signup" className="link link-primary">
+              Sign Up
+            </Link>
+          </p>
+          <Link to="/forgot-password" className="link link-primary whitespace-nowrap">
+            Forgot Password?
+          </Link>
+        </div>
       </div>
-    </div>
+    </SectionCard>
   );
 }

@@ -5,6 +5,8 @@ export type Task = {
   title: string;
   description?: string;
   status: "todo" | "doing" | "done";
+  createdAt?: number;
+  updatedAt?: number;
 };
 
 export async function listTasks(idToken: string) {

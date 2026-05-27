@@ -21,8 +21,8 @@ const firebaseConfig = {
 export const firebaseApp = initializeApp(firebaseConfig);
 export const firebaseAuth = getAuth(firebaseApp);
 
-const authEmulatorHost =
-  env.VITE_FIREBASE_AUTH_EMULATOR_HOST || (env.DEV ? "127.0.0.1:9099" : undefined);
-if (authEmulatorHost) {
+const useAuthEmulator = env.VITE_USE_FIREBASE_EMULATORS === "true";
+const authEmulatorHost = env.VITE_FIREBASE_AUTH_EMULATOR_HOST || "127.0.0.1:9099";
+if (useAuthEmulator) {
   connectAuthEmulator(firebaseAuth, `http://${authEmulatorHost}`, { disableWarnings: true });
 }

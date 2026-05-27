@@ -1,25 +1,30 @@
-import { FormField } from "./FormField";
 import { useState } from "react";
 import { createTask } from "../api/tasks";
 import { useAuth } from "../auth/AuthProvider";
+import { getFriendlyErrorMessage } from "../utils/errorMessages";
+import { FormField } from "./FormField";
+import { SectionCard } from "./SectionCard";
+import { SectionHeader } from "./SectionHeader";
 
 type TaskComposerProps = {
   onAdd?: () => void;
+  preview?: boolean;
+  sectionId?: string;
 };
 
-export function TaskComposer({ onAdd }: TaskComposerProps) {
+export function TaskComposer({ onAdd, preview = false, sectionId }: TaskComposerProps) {
   const { idToken } = useAuth();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleAdd() {
-    if (!idToken) {
-      setError("Please log in first.");
-      return;
-    }
+    if (!idToken || preview) return;
+
     setError(null);
+    setSuccess(null);
     setLoading(true);
     try {
       await createTask(idToken, {
@@ -28,61 +33,64 @@ export function TaskComposer({ onAdd }: TaskComposerProps) {
       });
       setTitle("");
       setDescription("");
+      setSuccess("Task created successfully.");
       onAdd?.();
-    } catch (e) {
-      setError(String((e as any)?.message || e));
+    } catch (caught) {
+      setError(getFriendlyErrorMessage(caught, "Unable to create this task. Please try again."));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="card bg-base-100 shadow-sm">
-      <div className="card-body gap-4">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="card-title">New Task</h2>
-          <span className="badge badge-outline">Newest first</span>
-        </div>
+    <section id={sectionId}>
+      <SectionCard className={preview ? "shadow-none" : "shadow-sm"}>
+        <div className="card-body gap-5 p-5 sm:p-6">
+          <SectionHeader title="Create Task" badge={preview ? "Preview" : undefined} />
+          <p className="-mt-3 text-sm text-base-content/70">Add a focused, actionable item to your list.</p>
 
-        <FormField label="Title">
-          <input
-            data-testid="task-title-input"
-            className="input input-bordered w-full"
-            type="text"
-            placeholder="e.g., Buy milk"
-            maxLength={120}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </FormField>
+          <FormField label="Title" helper={`${title.length}/120`} required>
+            <input
+              data-testid="task-title-input"
+              className="input input-bordered w-full"
+              type="text"
+              placeholder="e.g., Buy milk"
+              maxLength={120}
+              required
+              value={title}
+              disabled={preview}
+              onChange={(event) => setTitle(event.target.value)}
+            />
+          </FormField>
 
-        <FormField label="Description (optional)">
-          <textarea
-            data-testid="task-desc-input"
-            className="textarea textarea-bordered w-full"
-            placeholder="Details..."
-            rows={3}
-            maxLength={500}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </FormField>
+          <FormField label="Description (optional)" helper={`${description.length}/500`}>
+            <textarea
+              data-testid="task-desc-input"
+              className="textarea textarea-bordered w-full"
+              placeholder="Add any details..."
+              rows={3}
+              maxLength={500}
+              value={description}
+              disabled={preview}
+              onChange={(event) => setDescription(event.target.value)}
+            />
+          </FormField>
 
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-sm text-base-content/60">Tip: keep titles short and clear.</span>
           <button
             data-testid="task-add"
             type="button"
-            className="btn btn-primary"
-            disabled={loading}
+            className="btn btn-primary w-full"
+            disabled={preview || !idToken || loading || !title.trim()}
             onClick={handleAdd}
           >
-            Add Task
+            {loading ? <span className="loading loading-spinner loading-sm" /> : null}
+            {preview ? "Sign in to create tasks" : loading ? "Adding task..." : "Add Task"}
           </button>
-        </div>
 
-        {error ? <div className="alert alert-error text-sm">{error}</div> : null}
-      </div>
-    </div>
+          {success ? <div role="status" className="alert alert-success text-sm">{success}</div> : null}
+          {error ? <div role="alert" className="alert alert-error text-sm">{error}</div> : null}
+        </div>
+      </SectionCard>
+    </section>
   );
 }

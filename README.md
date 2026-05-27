@@ -79,24 +79,28 @@ cd backend
 npm install
 ```
 
-### 3) Start Firebase Emulators (Auth + Firestore)
+### 3) Configure the Running App
+Use production Firebase Web App values in `frontend/.env`. For a locally running backend, use production Firebase Admin values in the repo-root `.env`; never commit service-account credentials.
+
+### 4) Run Integration Tests with Firebase Emulators
+The integration test configuration supplies emulator-only Firebase values and does not use production credentials for task data. From the repository root, run:
 ```bash
-npm run emulators:start
+npm run emulators:exec:integration
 ```
 
-### 4) Run Unit Tests
+### 5) Run Unit Tests
 ```bash
 cd backend
 npm run test:unit
 ```
 
-### 5) Run Integration Tests
+### 6) Run Integration Tests Against Already Running Emulators
 ```bash
 cd backend
 npm run test:integration
 ```
 
-### 6) Run System / E2E Tests (Playwright)
+### 7) Run System / E2E Tests (Playwright)
 ```bash
 cd frontend
 npx playwright install
