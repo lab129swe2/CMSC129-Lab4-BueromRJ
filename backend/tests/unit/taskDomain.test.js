@@ -23,6 +23,10 @@ describe("task domain logic", () => {
     expect(() => normalizeUpdateTask({})).toThrow(/patch/i);
   });
 
+  test("normalizeUpdateTask rejects patches with no supported fields", () => {
+    expect(() => normalizeUpdateTask({ unsupported: "field" })).toThrow(/patch|field/i);
+  });
+
   test("applyTaskPatch updates only provided fields", () => {
     const task = {
       id: "t1",

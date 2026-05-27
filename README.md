@@ -145,6 +145,8 @@ Failing run (Red phase):
 Passing run (Green phase):
 ![CI Passing Run](docs/screenshots/ci-green-pass.png)
 
+> Screenshots taken from GitHub Actions workflow runs for the corresponding `[RED]` and `[GREEN]` commits.
+
 ## Deployment
 - Platform(s): **[TBD]**
 - Live URL: **[TBD]**
