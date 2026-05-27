@@ -1,11 +1,11 @@
-# CMSC 129 Laboratory Assignment 4 — Task Manager (TDD)
+# CMSC 129 Laboratory Assignment 4 - Task Manager (TDD)
 
 Author: **Rei Jansen Buerom**
 
-Live URL: **[TBD]**
+Live URL: **https://cmsc-129-lab4-buerom-rj.vercel.app/**
 
 ## App Description
-This project is a single-resource CRUD **Task Manager** built using **Test-Driven Development (TDD)**. Users can **sign up and log in using email/password** and then create, view, update, and delete their own tasks. Tasks are stored in **Firestore**, and the development process follows the **Red → Green → Refactor** cycle with commit history as evidence.
+This project is a single-resource CRUD **Task Manager** built using **Test-Driven Development (TDD)**. Users can **sign up and log in using email/password** to access their task list. Task creation and listing are currently wired through an Express API to **Firestore**; update and delete behavior are planned to complete the CRUD workflow. Development follows the **Red -> Green -> Refactor** cycle with commit history as evidence.
 
 ## User Stories
 1. As a user, I want to sign up and log in with my email and password, so that I can securely access my own tasks.
@@ -18,9 +18,9 @@ This project is a single-resource CRUD **Task Manager** built using **Test-Drive
 - **Authentication:** Firebase Authentication (Email/Password)
 - **Data Storage:** Firestore
 - **Testing Tools:**
-  - **Unit:** Jest **[TBD]** (pure business logic)
-  - **Integration:** Jest + Supertest **[TBD]** (Express API + Firestore via Firebase Admin SDK)
-  - **System/E2E:** Playwright **[TBD]** (real browser user journeys)
+  - **Unit:** Jest (pure business logic)
+  - **Integration:** Jest + Supertest (Express API + Firestore via Firebase Admin SDK)
+  - **System/E2E:** Playwright (real browser user journeys)
 - **Testing Infrastructure:** Firebase Emulators (Auth + Firestore)
 - **CI/CD:** GitHub Actions
 
@@ -35,67 +35,72 @@ Unit tests cover pure, isolated functions such as:
 
 Unit tests must **not** make HTTP requests and must **not** interact with Firebase/Firestore.
 
-### Integration Tests (Request → Route → Controller → Firestore)
+### Integration Tests (Request -> Route -> Controller -> Firestore)
 Integration tests cover at least one full request/response cycle through the Express API with real wiring:
 - Express route + controller + repository/data layer
 - Firebase Authentication via **Bearer token** (`Authorization: Bearer <idToken>`)
 - Firestore reads/writes via **Firebase Admin SDK**
 - Firestore emulator for deterministic testing
 
-Integration tests will include behavior such as:
+Current integration tests include:
 - creating tasks
 - listing tasks **sorted newest-first**
-- partially updating tasks (only fields provided change)
-- deleting tasks
+
+Additional integration coverage is needed when update and delete API behavior is implemented.
 
 ### System / E2E Tests (Real Browser User Journeys)
-System tests use Playwright to simulate real user behavior in a browser and will include **one test per user story**:
-- sign up / log in
-- create tasks and verify newest-first ordering in the UI
-- update and delete tasks
+System tests use Playwright with **one test per user story**. Current tests verify the required UI controls and selectors render. Behavioral E2E assertions for authenticated CRUD flows still need to be expanded as CRUD wiring is completed.
 
 These tests run against the full app (frontend + backend) configured to use Firebase Emulators.
 
 ## Setup Instructions
-> Note: Commands will be finalized as the project is built. Placeholders are marked **[TBD]**.
 
 ### 1) Clone
 ```bash
-git clone [TBD_REPO_URL]
+git clone https://github.com/lab129swe2/CMSC129-Lab4-BueromRJ.git
 cd CMSC129-Lab4-BueromRJ
 ```
 
 ### 2) Install Dependencies
+Repository tools:
+```bash
+npm install
+```
+
 Frontend:
 ```bash
-cd [TBD_FRONTEND_DIR]
-[TBD_INSTALL_CMD]
+cd frontend
+npm install
 ```
 
 Backend:
 ```bash
-cd [TBD_BACKEND_DIR]
-[TBD_INSTALL_CMD]
+cd backend
+npm install
 ```
 
 ### 3) Start Firebase Emulators (Auth + Firestore)
 ```bash
-[TBD_FIREBASE_EMULATOR_CMD]
+npm run emulators:start
 ```
 
 ### 4) Run Unit Tests
 ```bash
-[TBD_UNIT_TEST_CMD]
+cd backend
+npm run test:unit
 ```
 
 ### 5) Run Integration Tests
 ```bash
-[TBD_INTEGRATION_TEST_CMD]
+cd backend
+npm run test:integration
 ```
 
 ### 6) Run System / E2E Tests (Playwright)
 ```bash
-[TBD_E2E_TEST_CMD]
+cd frontend
+npx playwright install
+npm run test:e2e
 ```
 
 ## Test Results
@@ -124,7 +129,7 @@ cd [TBD_BACKEND_DIR]
 > Screenshot taken after running the full test suite (unit + integration + system).
 
 ## Reflection
-Writing tests before code was most difficult when the implementation details were still unclear. In the Red phase, I had to commit to a concrete behavior (inputs, outputs, status codes, and UI selectors) without relying on “I’ll figure it out later.” That forced me to think carefully about what the user story actually required and what should be tested at each level. I also found it challenging to keep Red commits failing for the correct reason: a misconfigured test runner or missing emulator is very different from a meaningful failing assertion, so I had to pay attention to setup and isolation early.
+Writing tests before code was most difficult when the implementation details were still unclear. In the Red phase, I had to commit to a concrete behavior (inputs, outputs, status codes, and UI selectors) without relying on "I'll figure it out later." That forced me to think carefully about what the user story actually required and what should be tested at each level. I also found it challenging to keep Red commits failing for the correct reason: a misconfigured test runner or missing emulator is very different from a meaningful failing assertion, so I had to pay attention to setup and isolation early.
 
 Writing tests first changed how I designed the code by pushing me toward clean boundaries. The unit tests encouraged small, pure functions for validation and normalization. Integration tests pushed me to export the Express app separately from the server so Supertest could run request/response cycles without starting a real listener. System tests made me define stable `data-testid` hooks, which shaped the component structure and kept UI changes from breaking tests accidentally. Overall, the tests acted like a specification: I implemented only what was needed to satisfy the next failing test, then refactored with confidence because the test suite guarded behavior.
 
@@ -133,10 +138,11 @@ This repository uses **GitHub Actions** to run tests automatically on every push
 
 ### Workflow Behavior
 - Trigger: **push** to `main` and **pull_request** targeting `main`
-- Unit, integration, and system tests run in CI
+- Unit tests currently run automatically in CI
+- Integration and system CI jobs will be added with Firebase Emulator startup
 - `[RED]` commits must show a **failing** CI run (tests fail for the correct reason)
 - `[GREEN]` commits must show a **passing** CI run (minimal implementation confirmed)
-- Deployment runs **only if all tests pass** **[TBD_DEPLOY_GATE_DETAILS]**
+- Deploy-on-pass gating is planned after all CI test jobs are enabled
 
 ### CI Evidence (Screenshots)
 Failing run (Red phase):
@@ -149,7 +155,7 @@ Passing run (Green phase):
 
 ## Deployment
 - Platform(s): **Frontend on Vercel, Backend API on Render**
-- Live URL: **[TBD]**
+- Live URL: **https://cmsc-129-lab4-buerom-rj.vercel.app/**
 
 ### Render (Backend API)
 1. Create a new **Web Service** (or Blueprint) on Render connected to this repo.
